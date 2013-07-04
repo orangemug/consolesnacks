@@ -1,0 +1,20 @@
+{
+    "name": "consolesnacks",
+    "version": "0.0.1",
+    "description": "To stop devs saying \"If it weren't for those pesky console.log's\"",
+    "main": "index.js",
+    "bin": "bin/cmd.js",
+    "dependencies": {
+        "through": "~2.2.0",
+        "falafel": "~0.1.6",
+        "escodegen": "0.0.17"
+    },
+    "devDependencies": {},
+    "scripts": {},
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/orangemug/consolesnacks.git"
+    },
+    "homepage": "https://github.com/orangemug/consolesnacks",
+    "license": "MIT"
+}

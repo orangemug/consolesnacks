@@ -1,0 +1,13 @@
+usage:
+
+  consolesnacks file
+ 
+    Remove console.* calls from `file`, printing the transformed file
+    contents to stdout.
+
+  consolesnacks
+  consolesnacks -
+ 
+    Remove console.* calls from stdin, printing the transformed file
+    contents to stdout.
+
