@@ -1,4 +1,4 @@
-# consolesnacks
+# consolesnacks (WORK IN PROGRESS)
 This module is a plugin for [browserify](http://browserify.org) to parse the AST so that you can remove that pesky `console.*`. It can also be run standalone.
 
 
