@@ -9,8 +9,15 @@
         "falafel": "~0.1.6",
         "escodegen": "0.0.17"
     },
-    "devDependencies": {},
-    "scripts": {},
+    "devDependencies": {
+      "mocha": "*",
+      "should": "*",
+      "sinon": "*"
+    },
+    "scripts": {
+      "test": "./node_modules/mocha/bin/mocha test/index.js",
+      "autotest": "./node_modules/mocha/bin/mocha -w test/index.js"
+    },
     "repository": {
         "type": "git",
         "url": "git://github.com/orangemug/consolesnacks.git"

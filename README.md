@@ -82,7 +82,7 @@ Or via the commandline if install globally (`npm install -g`)
     consolesnacks file
 
 
-# Install
+## Install
 Just include the git url in your `package.json` or install via
 
     npm install https://github.com/orangemug/consolesnacks.git
@@ -90,6 +90,7 @@ Just include the git url in your `package.json` or install via
 Or it you want the command line app
 
     npm install -g https://github.com/orangemug/consolesnacks.git
+
 
 # License
 MIT

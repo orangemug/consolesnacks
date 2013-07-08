@@ -16,4 +16,4 @@ var rs = fromFile
 ;
 
 var fpath = fromFile ? file : path.join(process.cwd(), '-');
-rs.pipe(consolesnacks(fpath)).pipe(process.stdout);
+rs.pipe(consolesnacks()).pipe(process.stdout);
