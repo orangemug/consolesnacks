@@ -1,20 +1,21 @@
 require("should");
 
+var _             = require("lodash");
 var fs            = require("fs");
 var through       = require("through");
 var consolesnacks = require("../");
 
 var FILES = [
   {filename: "test_none.js"},
-  {filename: "test_error.js", level: "error"},
-  {filename: "test_warn.js",  level: "warn"},
-  {filename: "test_info.js",  level: "info"},
-  {filename: "test_log.js",   level: "log"},
-  {filename: "test_dev.js",   level: "dev"},
-  {filename: "test_method.js", methods: [
+  {filename: "test_error.js", loglevel: "error"},
+  {filename: "test_warn.js",  loglevel: "warn"},
+  {filename: "test_info.js",  loglevel: "info"},
+  {filename: "test_log.js",   loglevel: "log"},
+  {filename: "test_dev.js",   loglevel: "dev"},
+  {filename: "test_method.js", method: [
     "time"
   ]},
-  {filename: "test_multi_method.js", methods: [
+  {filename: "test_multi_method.js", method: [
     "time",
     "profile"
   ]},
@@ -24,8 +25,8 @@ describe("consolesnacks", function() {
 
   FILES.forEach(function(obj) {
     var filename = obj.filename;
-    var level    = obj.level;
-    var methods  = obj.methods;
+    var level    = obj.loglevel;
+    var methods  = obj.method;
 
     it("testing: "+filename, function(done) {
       fs.readFile(__dirname+"/outfile/"+filename, function(err, outData) {
@@ -61,7 +62,30 @@ describe("consolesnacks", function() {
             process.env[envVar] = "true";
           });
         }
-        rs.pipe(consolesnacks()).pipe(tr);
+        rs.pipe(consolesnacks({disableRc: true})).pipe(tr);
+      });
+    });
+
+    it("testing: "+filename+" with opts", function(done) {
+      fs.readFile(__dirname+"/outfile/"+filename, function(err, outData) {
+        if(err) done(err);
+        var Writable = require('stream').Writable;
+        var ws = Writable();
+
+        // Do this properly
+        var data = ""
+        var tr = through(function(chunk) {
+          data += chunk.toString();
+        }, function() {
+          data.should.eql(outData.toString());
+          done();
+        });
+
+        var path = __dirname+"/infile/test_all.js";
+        var rs = fs.createReadStream(path)
+
+				var opts = _.extend(obj, {disableRc: true});
+        rs.pipe(consolesnacks(opts)).pipe(tr);
       });
     });
   });

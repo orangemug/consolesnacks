@@ -7,7 +7,9 @@
     "dependencies": {
         "through": "~2.2.0",
         "falafel": "~0.1.6",
-        "escodegen": "0.0.17"
+        "escodegen": "0.0.17",
+        "rc": "*",
+        "lodash": "*"
     },
     "devDependencies": {
       "mocha": "*",

@@ -1,5 +1,7 @@
 var path = require('path');
 
+var _       = require("lodash");
+var rc      = require("rc");
 var through = require('through');
 var falafel = require('falafel');
 var unparse = require('escodegen').generate;
@@ -12,13 +14,24 @@ var LOG_LEVELS = [
   "error"
 ];
 
-module.exports = function (file) {
+var conf = rc("consolesnacks");
+var ENV = process.env["env"];
+if(!ENV) {
+  ENV = "default";
+}
+
+
+module.exports = function (file, configOpts) {
   if (/\.json$/.test(file)) return through();
   var data = '';
   var fsNames = {};
   var vars = [ '__filename', '__dirname' ];
   var dirname = path.dirname(file);
   var pending = 0;
+
+  if(typeof(configOpts) !== "object") {
+    configOpts = {};
+  }
   
   var tr = through(write, end);
   return tr;
@@ -26,16 +39,16 @@ module.exports = function (file) {
   function write (buf) { data += buf }
   function end () {
     var output, self = this;
-    getConfig(function(config) {
-      try { output = parse(config) }
-      catch (err) {
-        self.emit('error', new Error(
-          err.toString().replace('Error: ', '') + ' (' + file + ')')
-        );
-      }
+    var config = getConfig();
 
-      finish(output);
-    });
+    try { output = parse(config) }
+    catch (err) {
+      self.emit('error', new Error(
+        err.toString().replace('Error: ', '') + ' (' + file + ')')
+      );
+    }
+
+    finish(output);
   }
   
   function finish (output) {
@@ -43,21 +56,19 @@ module.exports = function (file) {
     tr.queue(null);
   }
 
-  function isDirectory(dirpath) {
-    // TODO
-    return false;
-  }
+  function getConfig() {
 
-  function isFile(filepath) {
-    // TODO
-    return false;
-  }
+    // Set initial state
+    var ret = {
+      method:   [],
+      disable:  false,
+      loglevel: undefined
+    };
 
-  function parseConfig(filepath) {
-    // TODO: Shouldn't be the sync method
-  }
+    if(conf && !configOpts.disableRc) {
+      ret = _.extend(ret, conf[ENV]);
+    }
 
-  function getConfigFromEnv(ret) {
     var env = process.env;
     // Get env vairables
     for(var k in env) {
@@ -72,55 +83,9 @@ module.exports = function (file) {
       }
     }
 
+    ret = _.extend(ret, configOpts);
+
     return ret;
-  }
-
-  function getConfigFromRcFile(ret, done) {
-    // Find `.consolesnacksrc` config file by searching up the tree.
-    var foundFile = false;
-    var maxIteration = 100;
-    var basepath = process.cwd();
-    while(basepath !== "/") {
-      if(maxIteration-- < 0) return;
-
-      if( isDirectory(basepath) ) {
-        var rcpath = path.join(basepath, ".consolesnacksrc");
-        if( fs.exists(rcpath) && isFile(rcpath) ) {
-          foundFile = true;
-          var obj = parseConfig(rcpath, done)
-          fs.readFile(filepath, function(err, data) {
-            // TODO: HERE!!!
-            done(err, JSON.parse(data));
-          });
-          _.extends(ret, obj[targetEnv]);
-          return;
-        }
-      }
-
-      basepath = path.dirname(basepath);
-    }
-
-    if(!foundFile) {
-      done({})
-    }
-  }
-
-  function getConfig(done) {
-    var env = process.env;
-    var targetEnv = (env["ENV"] === undefined ? env["ENV"] : "default");
-
-    // Set initial state
-    var ret = {
-      method:   [],
-      disable:  false,
-      loglevel: undefined
-    };
-
-    getConfigFromEnv(ret);
-
-    // TODO
-
-    done(ret);
   }
   
   function parse (config) {

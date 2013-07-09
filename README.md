@@ -1,4 +1,4 @@
-# consolesnacks (WORK IN PROGRESS)
+# consolesnacks
 This module is a plugin for [browserify](http://browserify.org) to parse the AST so that you can remove that pesky `console.*`. It can also be run standalone.
 
 
@@ -43,8 +43,8 @@ For example a log level of *log* would keep all *dev* and *log* calls.
 
 The `method` array states all other methods on the `console` object that you want to keep, note this include the associated "End" methods. For example if you specify `time` then the following methods will be included
 
-   console.time("consolesnacks is awesome!");
-   console.timeEnd("consolesnacks is awesome!");
+    console.time("consolesnacks is awesome!");
+    console.timeEnd("consolesnacks is awesome!");
 
 Specifying `{"disable": true}` prevent any `console` methods being removed.
 
