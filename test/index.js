@@ -3,6 +3,7 @@ require("should");
 var _             = require("lodash");
 var fs            = require("fs");
 var through       = require("through");
+var browserify    = require('browserify');
 var consolesnacks = require("../");
 
 var FILES = [
@@ -31,8 +32,6 @@ describe("consolesnacks", function() {
     it("testing: "+filename, function(done) {
       fs.readFile(__dirname+"/outfile/"+filename, function(err, outData) {
         if(err) done(err);
-        var Writable = require('stream').Writable;
-        var ws = Writable();
 
         // Do this properly
         var data = ""
@@ -69,8 +68,6 @@ describe("consolesnacks", function() {
     it("testing: "+filename+" with opts", function(done) {
       fs.readFile(__dirname+"/outfile/"+filename, function(err, outData) {
         if(err) done(err);
-        var Writable = require('stream').Writable;
-        var ws = Writable();
 
         // Do this properly
         var data = ""
@@ -88,6 +85,46 @@ describe("consolesnacks", function() {
         rs.pipe(consolesnacks(opts)).pipe(tr);
       });
     });
+
+    it("testing: "+filename+" with browserify", function(done) {
+
+      fs.readFile(__dirname+"/outfile/"+filename, function(err, outData) {
+        var b = browserify(__dirname+"/infile/test_all.js");
+        b.transform('./');
+
+        // Do this properly
+        var data = ""
+        var tr = through(function(chunk) {
+          data += chunk.toString();
+        }, function() {
+          data.should.include(outData.toString());
+          done();
+        });
+
+        b.bundle().pipe(tr);
+      });
+    });
+
   });
+
+  it("can be disabled", function() {
+    fs.readFile(__dirname+"/outfile/test_all.js", function(err, outData) {
+      if(err) done(err);
+
+      // Do this properly
+      var data = ""
+      var tr = through(function(chunk) {
+        data += chunk.toString();
+      }, function() {
+        data.should.eql(outData.toString());
+        done();
+      });
+
+      var path = __dirname+"/infile/test_all.js";
+      var rs = fs.createReadStream(path);
+
+      rs.pipe(consolesnacks({disable: true})).pipe(tr);
+    });
+  })
 
 });
