@@ -15,8 +15,13 @@ var LOG_LEVELS = [
 ];
 
 var conf = rc("consolesnacks");
-var ENV = process.env["env"];
-if(!ENV) {
+
+// Set the env
+if(process.env["CONSOLESNACKS_ENV"]) {
+  ENV = process.env["CONSOLESNACKS_ENV"];
+} else if(process.env["ENV"]) {
+  ENV = process.env["ENV"];
+} else {
   ENV = "default";
 }
 
@@ -90,6 +95,10 @@ module.exports = function (file, configOpts) {
   
   function parse (config) {
     var output = falafel(data, function (node) {
+      if(config.disable) {
+        return;
+      }
+
       // Are we a `console.*` node
       if (
            node.callee
