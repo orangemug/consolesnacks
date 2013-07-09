@@ -1,10 +1,7 @@
-var path = require('path');
-
 var _       = require("lodash");
 var rc      = require("rc");
 var through = require('through');
 var falafel = require('falafel');
-var unparse = require('escodegen').generate;
 
 var LOG_LEVELS = [
   "dev",
@@ -29,10 +26,6 @@ if(process.env["CONSOLESNACKS_ENV"]) {
 module.exports = function (file, configOpts) {
   if (/\.json$/.test(file)) return through();
   var data = '';
-  var fsNames = {};
-  var vars = [ '__filename', '__dirname' ];
-  var dirname = path.dirname(file);
-  var pending = 0;
 
   if(typeof(configOpts) !== "object") {
     configOpts = {};
@@ -41,8 +34,11 @@ module.exports = function (file, configOpts) {
   var tr = through(write, end);
   return tr;
   
-  function write (buf) { data += buf }
-  function end () {
+  function write(buf) {
+    data += buf
+  }
+
+  function end() {
     var output, self = this;
     var config = getConfig();
 
@@ -56,7 +52,7 @@ module.exports = function (file, configOpts) {
     finish(output);
   }
   
-  function finish (output) {
+  function finish(output) {
     tr.queue(String(output));
     tr.queue(null);
   }
@@ -93,7 +89,7 @@ module.exports = function (file, configOpts) {
     return ret;
   }
   
-  function parse (config) {
+  function parse(config) {
     var output = falafel(data, function (node) {
       if(config.disable) {
         return;
